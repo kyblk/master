@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 
 class Task(models.Model):
-    author = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User', related_name='creator')
+    assigned_to = models.ForeignKey('auth.User', related_name='responsible')
     title = models.CharField(max_length=200)
     text = models.TextField()
     created_date = models.DateTimeField(
