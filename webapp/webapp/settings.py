@@ -81,6 +81,17 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+# инструкция с официального сайта djangoproject.com
+# settings.py
+'''DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'kyblk$default',
+        'USER': 'kyblk',
+        'PASSWORD': 'Zaq12wsx',
+        'HOST': 'kyblk.mysql.pythonanywhere-services.com',   # Or an IP Address that your DB is hosted on
+    }
+}'''
 
 
 # Password validation

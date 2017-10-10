@@ -1,35 +1,13 @@
-{% load staticfiles %}
-<html>
-<head>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Lobster&subset=latin,cyrillic" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/assignment_of_tasks.css' %}">
-</head>
-<body>
-<div class="page-header">
-    <div style="text-align: right;">
-        <a target="_blank" href="/admin" style="text-align: right;">Admin</a>
-    </div>
-    <h1>All tasks</h1>
-</div>
+{% extends 'tasks/base.html' %}
 
-<div class="content container">
-    <div class="row">
-        <div class="col-md-8">
-
-            {% for post in tasks %}
-            <div class="post">
-                <div class="date">{{ post.created_date }}</p></div>
-                <b>Тема: {{ post.title }}</b>
-                <p>{{ post.author }} назначил на {{ post.assigned_to }}</p>
-                <p>{{ post.text|linebreaksbr }}</p>
+{% block content %}
+{% for post in tasks %}
+    <div class="post">
+        <h3><a href="{% url 'post_detail' pk=post.pk %}">Тема: {{ post.title }}</a></h3>
+            <div class="date">
+                {{ post.created_date }}
             </div>
-            {% endfor %}
-        </div>
+        <p>{{ post.text|linebreaksbr }}</p>
     </div>
-</div>
-
-
-</body>
-</html>
+{% endfor %}
+{% endblock %}
