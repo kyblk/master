@@ -1,10 +1,12 @@
 <div>
+    <a target="_blank" href="/admin">админка</a>
     <b><a href="/">All tasks</a></b><br><br><br>
 </div>
 
 {% for post in tasks %}
     <div>
         <b>Тема: {{ post.title }}</b>
+        <p>{{ post.author }} назначил на {{ post.assigned_to }}</p>
         <p>{{ post.text|linebreaksbr }}</p>
         <p>{{ post.created_date }}</p>
         <br>
