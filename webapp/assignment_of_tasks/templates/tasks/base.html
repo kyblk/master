@@ -11,7 +11,14 @@
     <div style="text-align: right;">
         <a target="_blank" href="/admin" style="text-align: right;">Admin</a>
     </div>
-    <h1><a href="/">All tasks</a></h1>
+    <table>
+        <tr>
+            <td> <h1><a href="/">All tasks</a></h1></td>
+                {% if user.is_authenticated %}
+                <td><h2><a href="{% url 'post_new' %}"><span class="glyphicon glyphicon-plus"  style='padding-left:15px;'></span></a></h2></td>
+                {% endif %}
+        </tr>
+    </table>
 </div>
 
 <div class="content container">

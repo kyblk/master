@@ -7,7 +7,9 @@
                 {{ task.created_date }}
             </div>
         {% endif %}
-        <h1>{{ task.title }}</h1>
+            {% if user.is_authenticated %}
+              <h1>{{ task.title }} <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span class="glyphicon glyphicon-pencil"></span></a></h1>
+            {% endif %}
         <p>{{ task.text|linebreaksbr }}</p>
     </div>
 {% endblock %}
