@@ -1,15 +1,32 @@
 {% extends 'tasks/base.html' %}
 
 {% block content %}
-    <div class="post">
-        {% if task.created_date %}
-            <div class="date">
-                {{ task.created_date }}
-            </div>
-        {% endif %}
-            {% if user.is_authenticated %}
-              <h1>{{ task.title }}  <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span class="glyphicon glyphicon-pencil"></span></a></h1>
-            {% endif %}
-        <p>{{ task.text|linebreaksbr }}</p>
+<div class="post">
+    {% if task.created_date %}
+    <div class="date">
+        {{ task.created_date }}
     </div>
-{% endblock %}Final model posts. Makemigrations. Edit posts. 
+    {% endif %}
+    {% if user.is_authenticated %}
+    <h1>{{ task.title }}
+        <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span
+                class="glyphicon glyphicon-pencil"></span></a>
+        <a class="btn btn-default" href="{% url 'task_remove' pk=task.pk %}"><span
+                class="glyphicon glyphicon-remove"></span></a>
+    </h1>
+    {% endif %}
+    <p>{{ task.text|linebreaksbr }}</p>
+</div>
+
+<hr>
+{% for comment in task.comments.all %}
+<div class="comment">
+    <div class="date">{{ comment.created_date }}</div>
+    <strong>{{ comment.author }}</strong>
+    <p>{{ comment.text|linebreaks }}</p>
+</div>
+{% empty %}
+<p>No comments here yet :(</p>
+{% endfor %}
+<a class="btn btn-default" href="{% url 'add_comment_to_task' pk=task.pk %}">Add comment</a>
+{% endblock %}

@@ -29,4 +29,12 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
-# Create your models here.
+
+class Comment(models.Model):
+    task = models.ForeignKey('assignment_of_tasks.Task', related_name='comments')
+    author = models.ForeignKey('auth.User', related_name='participant')
+    text = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.text

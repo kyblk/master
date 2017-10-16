@@ -1,19 +1,22 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 from .models import Task
-from .forms import TaskForm
+from .forms import TaskForm, CommentForm
+
 
 # Create your views here.
-def post_list(request):
+def task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
-    return render(request, 'tasks/post_list.html', {'tasks' : tasks})
+    return render(request, 'tasks/task_list.html', {'tasks' : tasks})
 
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'tasks/task_detail.html', {'task': task})
 
-def post_new(request):
+@login_required
+def task_new(request):
     form = TaskForm()
     if request.method == "POST":
         form = TaskForm(request.POST)
@@ -27,6 +30,7 @@ def post_new(request):
         form = TaskForm()
     return render(request, 'tasks/task_edit.html', {'form': form})
 
+@login_required
 def task_edit(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == "POST":
@@ -40,3 +44,23 @@ def task_edit(request, pk):
     else:
         form = TaskForm(instance=task)
     return render(request, 'tasks/task_edit.html', {'form': form})
+
+@login_required
+def task_remove(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    task.delete()
+    return redirect('task_list')
+
+def add_comment_to_task(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.task = task
+            comment.author = request.user
+            comment.save()
+            return redirect('task_detail', pk=task.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'tasks/add_comment_to_task.html', {'form': form})

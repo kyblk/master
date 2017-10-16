@@ -3,7 +3,7 @@
 {% block content %}
 {% for post in tasks %}
     <div class="post">
-        <h3><a href="{% url 'task_detail' pk=post.pk %}">Тема: {{ post.title }} [{{ post.get_status_display }}]</a></h3>
+        <h3><a href="{% url 'task_detail' pk=post.pk %}">Тема: {{ post.title }} [{{ post.get_status_display }}] [{{ post.comments.count }}]</a></h3>
             <div class="date">
                 {{ post.created_date }}
             </div>

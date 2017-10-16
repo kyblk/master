@@ -13,9 +13,12 @@
     </div>
     <table>
         <tr>
-            <td> <h1><a href="/">All tasks</a></h1></td>
+                <td> <h1><a href="/">All tasks</a></h1></td>
                 {% if user.is_authenticated %}
-                <td><h2><a href="{% url 'post_new' %}"><span class="glyphicon glyphicon-plus"  style='padding-left:15px;'></span></a></h2></td>
+                <td><h2><a href="{% url 'task_new' %}"><span class="glyphicon glyphicon-plus"  style='padding-left:15px;'></span></a></h2></td>
+                <p class="top-menu">Hello {{ user.username }} <small>(<a href="{% url 'logout' %}">Log out</a>)</small></p>
+                {% else %}
+                <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock"></span></a>
                 {% endif %}
         </tr>
     </table>
