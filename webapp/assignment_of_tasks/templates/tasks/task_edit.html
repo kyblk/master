@@ -5,10 +5,8 @@
     <form method="POST" class="post-form">{% csrf_token %}
         <p>Назначить задачу на: {{ form.assigned_to }}</p>
         <p>Тема: {{ form.title }} </p>
-        {{ ifequals form.author user.username }}
         <p> {{ form.text }} </p>
         {{ form.status}}
-
         <button type="submit" class="save btn btn-default">Save</button>
     </form>
 {% endblock %}
