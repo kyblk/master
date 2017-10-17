@@ -2,11 +2,11 @@
 
 {% block content %}
 <div class="post">
-    {% if task.created_date %}
     <div class="date">
         {{ task.created_date }}
+        <p> Задача назначена на: {{ task.assigned_to }} </p>
+        <p> Cтатус: {{ task.get_status_display }} </p>
     </div>
-    {% endif %}
     {% if user.is_authenticated %}
     <h1>{{ task.title }}
         <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span
@@ -21,6 +21,9 @@
 <hr>
 {% for comment in task.comments.all %}
 <div class="comment">
+    {% ifequal "root" comment.author %}
+    ПРИВЕТ
+    {% endifequal %}
     <div class="date">{{ comment.created_date }}</div>
     <strong>{{ comment.author }}</strong>
     <p>{{ comment.text|linebreaks }}</p>
