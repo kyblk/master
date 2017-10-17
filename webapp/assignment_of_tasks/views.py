@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from .models import Task
-from .forms import TaskForm, CommentForm
+from .models import Task, Comment
+from .forms import TaskForm, CommentForm, UpdateTask
 
 
 # Create your views here.
@@ -56,12 +56,33 @@ def add_comment_to_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == "POST":
         c_form = CommentForm(request.POST)
+        u_task = UpdateTask(request.POST, instance=task)
         if c_form.is_valid():
             comment = c_form.save(commit=False)
+            upd_task = u_task.save(commit=False)
             comment.task = task
             comment.author = request.user
-            comment.save()
+            if comment.change_state == 'Y':
+                updating_task(pk,request.user,upd_task.assigned_to,upd_task.status,comment.text)
+            else:
+                comment.save()
             return redirect('task_detail', pk=task.pk)
     else:
         c_form = CommentForm()
-    return render(request, 'tasks/add_comment_to_task.html', {'c_form': c_form })
+        u_task = UpdateTask(instance=task)
+    return render(request, 'tasks/add_comment_to_task.html', {'c_form': c_form, 'upd_task': u_task})
+
+def updating_task (pk,author,assigned_to,status,text):
+    task = get_object_or_404(Task, pk=pk)
+    comment = Comment()
+    task.assigned_to = assigned_to
+    task.status = status
+    comment.task = task
+    comment.author = author
+    change_text = 'Назначена на %s статус [%s] <br><br>' % (task.assigned_to, task.get_status_display())
+    comment.text = change_text + text
+    comment.save()
+    task.save(update_fields=['status', 'assigned_to',])
+
+
+

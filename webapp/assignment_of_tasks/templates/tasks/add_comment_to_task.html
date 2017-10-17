@@ -4,6 +4,7 @@
     <h1>New comment</h1>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ c_form.as_p }}
+        <div id="change_id" class="change" style="display:none"> {{ upd_task.as_p}} </div>
         <button type="submit" class="save btn btn-default">Send</button>
     </form>
 {% endblock %}
