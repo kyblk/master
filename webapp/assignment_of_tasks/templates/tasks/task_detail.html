@@ -1,35 +1,33 @@
 {% extends 'tasks/base.html' %}
 
 {% block content %}
-<div class="post">
-    <div class="date">
-        {{ task.created_date }}
-        <p> Задача назначена на: {{ task.assigned_to }} </p>
-        <p> Cтатус: {{ task.get_status_display }} </p>
+<div class="container" id="post">
+    <div class="task">
+        <h1>
+            {{ task.title }}
+            {% ifequal user.username task.author.username %}
+            <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span
+                    class="glyphicon glyphicon-pencil"></span></a>
+            <a class="btn btn-default" href="{% url 'task_remove' pk=task.pk %}"><span
+                    class="glyphicon glyphicon-remove"></span></a>
+            {% endifequal %}
+        </h1>
+        <h6>Статус: {{ task.get_status_display }}</h6>
+        <h6>Создал: <b>{{ task.author.last_name }} {{ task.author.first_name }}</b> <font color="red">{{ task.created_date }}</font></h6>
+        <h6>Назначена на: <b>{{ task.assigned_to.last_name }} {{ task.assigned_to.first_name }}</b></h6>
+        <p>{{ task.text|linebreaksbr }}</p>
+        <hr>
     </div>
+    {% for comment in task.comments.all %}
+    <div class="comment">
+        <h4>{{ comment.author.last_name }} {{ comment.author.first_name }} <font color="red" size="2"> {{ task.created_date }}</font></h4>
+        <p> {{ comment.text|safe }}</p>
+        <br>
+    </div>
+    {% endfor %}
     {% if user.is_authenticated %}
-    <h1>{{ task.title }}
-        <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span
-                class="glyphicon glyphicon-pencil"></span></a>
-        <a class="btn btn-default" href="{% url 'task_remove' pk=task.pk %}"><span
-                class="glyphicon glyphicon-remove"></span></a>
-    </h1>
+    <p class="text-right"><a class="btn btn-default" href="{% url 'add_comment_to_task' pk=task.pk %}">Добавить
+        комментарий</a></p>
     {% endif %}
-    <p>{{ task.text|linebreaksbr }}</p>
 </div>
-
-<hr>
-{% for comment in task.comments.all %}
-<div class="comment">
-    {% ifequal "root" comment.author %}
-    ПРИВЕТ
-    {% endifequal %}
-    <div class="date">{{ comment.created_date }}</div>
-    <strong>{{ comment.author }}</strong>
-    <p>{{ comment.text|safe }}</p>
-</div>
-{% empty %}
-<p>No comments here yet :(</p>
-{% endfor %}
-<a class="btn btn-default" href="{% url 'add_comment_to_task' pk=task.pk %}">Add comment</a>
 {% endblock %}
