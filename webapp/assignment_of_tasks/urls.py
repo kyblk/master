@@ -1,8 +1,11 @@
 from django.conf.urls import url
 from . import views
 
+
 urlpatterns = [
     url(r'^$', views.task_list, name='task_list'),
+    url(r'^my_tasks/$', views.my_task_list, name='my_task_list'),
+    url(r'^completed_tasks/$', views.completed_task_list, name='completed_task_list'),
     url(r'^task/(?P<pk>\d+)/$', views.task_detail, name='task_detail'),
     url(r'^task/new/$', views.task_new, name='task_new'),
     url(r'^task/(?P<pk>\d+)/edit/$', views.task_edit, name='task_edit'),

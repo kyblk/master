@@ -1,12 +1,14 @@
 {% extends 'tasks/base.html' %}
 
 {% block content %}
-    <h1>New task</h1>
+<div class="container" id="naw_task" style="width: 400px">
+    <h1>Новая задача</h1>
     <form method="POST" class="post-form">{% csrf_token %}
         <p>Назначить задачу на: {{ form.assigned_to }}</p>
         <p>Тема: {{ form.title }} </p>
         <p> {{ form.text }} </p>
         {{ form.status}}
-        <button type="submit" class="save btn btn-default">Save</button>
+        <button type="submit" class="save btn btn-default">Создать</button>
     </form>
+</div>
 {% endblock %}

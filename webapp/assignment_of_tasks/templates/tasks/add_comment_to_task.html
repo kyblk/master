@@ -1,10 +1,16 @@
 {% extends 'tasks/base.html' %}
 
 {% block content %}
-    <h1>New comment</h1>
+<div class="container" id="new_comment" style="width: 400px">
+    <h1>Новый комментарий</h1>
     <form method="POST" class="post-form">{% csrf_token %}
-        {{ c_form.as_p }}
-        <div id="change_id" class="change" style="display:none"> {{ upd_task.as_p}} </div>
-        <button type="submit" class="save btn btn-default">Send</button>
+        <p>{{ c_form.text }}</p>
+        <p>{{ c_form.change_state }}</p>
+        <p><div id="change_id" class="change" style="display:none">
+            Назначить на: {{ upd_task.assigned_to}}
+            {{ upd_task.status}}
+        </div></p>
+        <p><button type="submit" class="save btn btn-default">Отправить</button></p>
     </form>
+</div>
 {% endblock %}

@@ -3,6 +3,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import redirect
+from django.views.generic import UpdateView
+from django.views.generic import FormView
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Comment
 from .forms import TaskForm, CommentForm, UpdateTask
@@ -12,6 +15,15 @@ from .forms import TaskForm, CommentForm, UpdateTask
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
     return render(request, 'tasks/task_list.html', {'tasks' : tasks})
+
+def my_task_list(request):
+    tasks = Task.objects.all().order_by('-created_date')
+    return render(request, 'tasks/my_task_list.html', {'tasks' : tasks})
+
+@login_required
+def completed_task_list(request):
+    tasks = Task.objects.all().order_by('-created_date')
+    return render(request, 'tasks/completed_task_list.html', {'tasks' : tasks})
 
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
@@ -81,10 +93,9 @@ def updating_task (pk,author,assigned_to,status,text):
     task.status = status
     comment.task = task
     comment.author = author
-    change_text = '<p><font size="2" face="cursive">Назначена на %s статус [%s] </b></font></p>' % (task.assigned_to, task.get_status_display())
+    change_text = '<p style="font-style: italic;"><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></font></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
     comment.text = change_text + text
     comment.save()
     task.save(update_fields=['status', 'assigned_to',])
-
 
 

@@ -30,13 +30,13 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="{% url 'task_new' %}">Создать задачу</a></li>
-                <li><a href="#">Мои задачи</a></li>
-                <li><a href="#">Завершенные</a></li>
+                <li><a href="{% url 'my_task_list' %}">Мои задачи</a></li>
+                <li><a href="{% url 'completed_task_list' %}">Завершенные</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
 
-                <!-- Для is_staff рендерим другую надпись и делаем ссылку в админку ссылку -->
-                {% ifequal user.is_staff True %}
+                <!-- Для is_superuser рендерим другую надпись и делаем ссылку в админку ссылку -->
+                {% ifequal user.is_superuser True %}
                 <li><a target="_blank" href="/admin"><span class="glyphicon glyphicon-tower"></span> Привет, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
                 {% else %}
                 <li><a href=""><span class="glyphicon glyphicon-user"></span> Добро пожаловать, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
