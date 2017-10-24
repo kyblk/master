@@ -98,4 +98,9 @@ def updating_task (pk,author,assigned_to,status,text):
     comment.save()
     task.save(update_fields=['status', 'assigned_to',])
 
-
+@login_required
+def comment_remove(request, pk_task, pk_com):
+    comment = get_object_or_404(Comment, pk=pk_com)
+    if comment.author == request.user:
+        comment.delete()
+    return redirect('task_list')
