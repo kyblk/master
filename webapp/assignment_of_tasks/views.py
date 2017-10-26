@@ -97,7 +97,7 @@ def updating_task (pk,author,assigned_to,status,text):
     task.status = status
     comment.task = task
     comment.author = author
-    change_text = '<p style="font-style: italic;"><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></font></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
+    change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
     comment.text = change_text + text
     comment.save()
     task.save(update_fields=['status', 'assigned_to',])
