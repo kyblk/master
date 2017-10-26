@@ -12,10 +12,12 @@ from .forms import TaskForm, CommentForm, UpdateTask
 
 
 # Create your views here.
+
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
     return render(request, 'tasks/task_list.html', {'tasks' : tasks})
 
+@login_required
 def my_task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
     return render(request, 'tasks/my_task_list.html', {'tasks' : tasks})
@@ -25,6 +27,7 @@ def completed_task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
     return render(request, 'tasks/completed_task_list.html', {'tasks' : tasks})
 
+@login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'tasks/task_detail.html', {'task': task})
@@ -86,6 +89,7 @@ def add_comment_to_task(request, pk):
         u_task = UpdateTask(instance=task)
     return render(request, 'tasks/add_comment_to_task.html', {'c_form': c_form, 'upd_task': u_task})
 
+@login_required
 def updating_task (pk,author,assigned_to,status,text):
     task = get_object_or_404(Task, pk=pk)
     comment = Comment()
@@ -103,4 +107,4 @@ def comment_remove(request, pk_task, pk_com):
     comment = get_object_or_404(Comment, pk=pk_com)
     if comment.author == request.user:
         comment.delete()
-    return redirect('task_list')
+    return redirect('task_detail', pk=pk_task)

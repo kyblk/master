@@ -6,9 +6,7 @@
   <h2>Список задач</h2>
   <div class="list-group">
     <!-- <a href="#" class="list-group-item active"> -->
-
     {% for task in tasks %}
-
 
     {% ifequal task.status 'completed' %}
       {% else %}
