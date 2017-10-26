@@ -89,7 +89,6 @@ def add_comment_to_task(request, pk):
         u_task = UpdateTask(instance=task)
     return render(request, 'tasks/add_comment_to_task.html', {'c_form': c_form, 'upd_task': u_task})
 
-@login_required
 def updating_task (pk,author,assigned_to,status,text):
     task = get_object_or_404(Task, pk=pk)
     comment = Comment()
