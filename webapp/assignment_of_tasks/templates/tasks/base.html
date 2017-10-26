@@ -27,13 +27,15 @@
 
         <!-- Панель -->
         <!-- Авторизованный -->
-        {% if user.is_authenticated %}
+
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            {% if user.is_authenticated %}
             <ul class="nav navbar-nav">
                 <li class="active"><a href="{% url 'task_new' %}">Создать задачу</a></li>
                 <li><a href="{% url 'my_task_list' %}">Мои задачи</a></li>
                 <li><a href="{% url 'completed_task_list' %}">Завершенные</a></li>
             </ul>
+
             <ul class="nav navbar-nav navbar-right">
 
                 <!-- Для is_superuser рендерим другую надпись и делаем ссылку в админку ссылку -->
@@ -44,16 +46,15 @@
                 {% endifequal %}
                 <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
             </ul>
+
+            {% else %}
+             <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Вход</a></li>
+             </ul>
+
+            {% endif %}
         </div><!-- /.navbar-collapse -->
 
-        {% else %}
-        <!-- Неавторизованный -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Вход</a></li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-        {% endif %}
         <!-- Конец панель -->
 
     </div><!-- /.container-fluid -->
