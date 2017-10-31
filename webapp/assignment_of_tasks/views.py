@@ -8,7 +8,7 @@ from django.views.generic import FormView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Comment
-from .forms import TaskForm, CommentForm, UpdateTask
+from .forms import TaskForm, CommentForm, UpdateTask, UserForm
 
 
 # Create your views here.
@@ -107,3 +107,16 @@ def comment_remove(request, pk_task, pk_com):
     if comment.author == request.user:
         comment.delete()
     return redirect('task_detail', pk=pk_task)
+
+@login_required
+def create_user(request):
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            User.objects.create_user(**form.cleaned_data)
+            # redirect, or however you want to get to the main view
+            return redirect('task_list')
+    else:
+        form = UserForm()
+
+    return render(request, 'tasks/create_user.html', {'form': form})

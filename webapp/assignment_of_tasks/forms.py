@@ -27,3 +27,7 @@ class UpdateTask(forms.ModelForm):
         model = Task
         fields = ('assigned_to','status')
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'first_name', 'last_name', 'is_staff', 'is_superuser')

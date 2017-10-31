@@ -40,6 +40,7 @@
 
                 <!-- Для is_superuser рендерим другую надпись и делаем ссылку в админку ссылку -->
                 {% ifequal user.is_superuser True %}
+                <li><a href="{% url 'create_user' %}">Создать пользователя</a></li>
                 <li><a target="_blank" href="/admin"><span class="glyphicon glyphicon-tower"></span> Привет, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
                 {% else %}
                 <li><a href=""><span class="glyphicon glyphicon-user"></span> Добро пожаловать, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>

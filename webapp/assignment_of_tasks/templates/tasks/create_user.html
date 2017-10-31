@@ -1,0 +1,23 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="container" id="new_comment" style="width: 400px">
+    <h1>Создать пользователя</h1>
+        <form method="post" action="">
+        {% csrf_token %}
+            <p>Ник:</p>
+            <p>{{ form.username }}</p>
+            <p>Пароль:</p>
+            <p>{{ form.password }}</p>
+            <p>Электронная почта:</p>
+            <p>{{ form.email }}</p>
+            <p>Имя:</p>
+            <p>{{ form.first_name }}</p>
+            <p>Фамилия:</p>
+            <p>{{ form.last_name }}</p>
+            <p>Сотрудник:{{ form.is_staff }}</p>
+            <p>Суперюзер:{{ form.is_superuser }}</p>
+        <input type="submit" value="Create new user account" />
+    </form>
+</div>
+{% endblock %}
