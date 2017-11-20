@@ -3,15 +3,23 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.shortcuts import redirect
-from django.views.generic import UpdateView
-from django.views.generic import FormView
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Comment
 from .forms import TaskForm, CommentForm, UpdateTask, UserForm
 
-
-# Create your views here.
+'''
+API
+'''
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from .serializers import TaskShortSerializer, TaskDetailSerializer, CommentDetailSerializer
+from rest_framework import serializers
+import simplejson
+'''
+'''
 
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_date')
@@ -120,3 +128,44 @@ def create_user(request):
         form = UserForm()
 
     return render(request, 'tasks/create_user.html', {'form': form})
+
+'''
+API methods
+'''
+@csrf_exempt
+def task_list_api(request):
+    if request.method == 'GET':
+        tasks = Task.objects.all()
+        serializer = TaskShortSerializer(tasks, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    '''elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = TaskSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)'''
+    serializer = TaskShortSerializer()
+    return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def task_detail_api(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        task = Task.objects.get(pk=pk)
+        comments = Comment.objects.filter(task=task)
+    except Task.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer_task = TaskDetailSerializer(task)
+
+        serializer_comment = CommentDetailSerializer(comments, many=True)
+        serializer_comment = serializer_comment.data[:]
+
+        #return JsonResponse(serializer_comment, safe=False)
+        return  JsonResponse(serializer_task.data, safe=False)
+    return 0
