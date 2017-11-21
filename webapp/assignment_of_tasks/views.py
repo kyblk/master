@@ -92,6 +92,8 @@ def add_comment_to_task(request, pk):
                 updating_task(pk,request.user,upd_task.assigned_to,upd_task.status,comment.text)
             else:
                 comment.save()
+                task.last_update_date = timezone.now()
+                task.save(update_fields=['last_update_date'])
             return redirect('task_detail', pk=task.pk)
     else:
         c_form = CommentForm()
@@ -110,12 +112,13 @@ def updating_task (pk,author,assigned_to,status,text):
     ###
     task.assigned_to = assigned_to
     task.status = status
+    task.last_update_date = timezone.now()
     comment.task = task
     comment.author = author
     #change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
     comment.text = text
     comment.save()
-    task.save(update_fields=['status', 'assigned_to',])
+    task.save(update_fields=['status', 'assigned_to','last_update_date'])
 
 @login_required
 def comment_remove(request, pk_task, pk_com):
