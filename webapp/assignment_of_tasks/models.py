@@ -13,6 +13,7 @@ task_statuses = (
         ('completed', 'Завершена'),
     )
 
+
 class Task(models.Model):
     author = models.ForeignKey('auth.User', related_name='creator')
     assigned_to = models.ForeignKey('auth.User', related_name='responsible')
@@ -29,7 +30,7 @@ class Task(models.Model):
                                      )
 
     def __str__(self):
-        return self.title
+        return 'id:' + str(self.pk) + '_' + self.title
 
 
 class Comment(models.Model):
@@ -47,18 +48,20 @@ class Comment(models.Model):
                                         choices=yes_or_no,
                                         default='N'
                                      )
-    old_assigned_to = models.ForeignKey('auth.User', related_name='old_responsible', null=True)
-    new_assigned_to = models.ForeignKey('auth.User', related_name='new_responsible', null=True)
+    old_assigned_to = models.ForeignKey('auth.User', related_name='old_responsible', null=True, blank = True)
+    new_assigned_to = models.ForeignKey('auth.User', related_name='new_responsible', null=True, blank = True)
     old_status = models.CharField(
                                         max_length=20,
                                         choices=task_statuses,
-                                        null=True
+                                        null=True,
+                                        blank=True
                                      )
     new_status = models.CharField(
                                         max_length=20,
                                         choices=task_statuses,
-                                        null=True
+                                        null=True,
+                                        blank=True
                                      )
 
     def __str__(self):
-        return self.text
+        return 'id:' + str(self.pk) + '_' + self.text
