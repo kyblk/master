@@ -165,7 +165,9 @@ def task_detail_api(request, pk):
 
         serializer_comment = CommentDetailSerializer(comments, many=True)
         serializer_comment = serializer_comment.data[:]
-
+        print (type(serializer_task))
+        print (type(serializer_comment))
         #return JsonResponse(serializer_comment, safe=False)
-        return  JsonResponse(serializer_task.data, safe=False)
+        #return JsonResponse(serializer_comment, safe=False)
+        return  JsonResponse(serializer_comment, safe=False)
     return 0
