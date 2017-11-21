@@ -87,6 +87,7 @@ def add_comment_to_task(request, pk):
             upd_task = u_task.save(commit=False)
             comment.task = task
             comment.author = request.user
+            comment.created_date = timezone.now()
             if comment.change_state == 'Y':
                 updating_task(pk,request.user,upd_task.assigned_to,upd_task.status,comment.text)
             else:

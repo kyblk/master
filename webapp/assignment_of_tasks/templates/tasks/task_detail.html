@@ -20,7 +20,7 @@
     </div>
     {% for comment in task.comments.all %}
     <div class="comment">
-        <h4>{{ comment.author.last_name }} {{ comment.author.first_name }} <font color="red" size="2"> {{ task.created_date }}</font>
+        <h4>{{ comment.author.last_name }} {{ comment.author.first_name }} <font color="red" size="2"> {{ comment.created_date }}</font>
             {% ifequal user.username comment.author.username %}
             <a class="btn btn-default" href="{% url 'comment_remove' pk_task=task.pk pk_com=comment.pk %}"><span
                      class="glyphicon glyphicon-remove"></span></a>
