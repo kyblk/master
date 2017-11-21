@@ -26,7 +26,19 @@
                      class="glyphicon glyphicon-remove"></span></a>
             {% endifequal %}
         </h4>
+            {% ifequal comment.change_state 'Y' %}
+
+                {% ifnotequal comment.old_assigned_to comment.new_assigned_to %}
+                    <p><em><font size="2">Параметр 'Назначена' изменен с <b>{{ comment.old_assigned_to.get_full_name }}</b> на <b>{{ comment.new_assigned_to.get_full_name }}</b> </font></em></p>
+                {% endifnotequal %}
+
+                {% ifnotequal comment.old_status comment.new_status %}
+                    <p><em><font size="2">Параметр 'Статус' изменен с <b>{{ comment.get_old_status_display }}</b> на <b>{{ comment.get_new_status_display }}</b> </font></em></p>
+                {% endifnotequal %}
+
+            {% endifequal %}
         <p> {{ comment.text|safe }}</p>
+
         <br>
     </div>
     {% endfor %}

@@ -101,12 +101,19 @@ def add_comment_to_task(request, pk):
 def updating_task (pk,author,assigned_to,status,text):
     task = get_object_or_404(Task, pk=pk)
     comment = Comment()
+    #Пишем историю в поля коммента.
+    comment.change_state = "Y"
+    comment.old_assigned_to = task.assigned_to
+    comment.new_assigned_to = assigned_to
+    comment.old_status = task.status
+    comment.new_status = status
+    ###
     task.assigned_to = assigned_to
     task.status = status
     comment.task = task
     comment.author = author
-    change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
-    comment.text = change_text + text
+    #change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
+    comment.text = text
     comment.save()
     task.save(update_fields=['status', 'assigned_to',])
 
@@ -152,14 +159,12 @@ def task_list_api(request):
 
 @csrf_exempt
 def task_detail_api(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
     try:
         task = Task.objects.get(pk=pk)
         comments = Comment.objects.filter(task=task)
     except Task.DoesNotExist:
-        return HttpResponse(status=404)
+        return JsonResponse({'error': 'not found'})
+        #return HttpResponse(status=404)
 
     if request.method == 'GET':
         #Тут происходит какая-то хуйня
@@ -171,5 +176,5 @@ def task_detail_api(request, pk):
         #Добавляем json информацию о задаче в 0 элемент листа. Начиная с 1 - json комментариев
         serializer_comment.insert(0,serializer_task.data)
 
-        return JsonResponse(serializer_comment, safe=False)
-    return 0
+        #return JsonResponse(serializer_comment, safe=False)
+        return JsonResponse(serializer_comment)
