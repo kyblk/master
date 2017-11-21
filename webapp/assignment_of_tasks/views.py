@@ -161,13 +161,14 @@ def task_detail_api(request, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
+        #Тут происходит какая-то хуйня
         serializer_task = TaskDetailSerializer(task)
 
         serializer_comment = CommentDetailSerializer(comments, many=True)
         serializer_comment = serializer_comment.data[:]
-        print (type(serializer_task))
-        print (type(serializer_comment))
-        #return JsonResponse(serializer_comment, safe=False)
-        #return JsonResponse(serializer_comment, safe=False)
-        return  JsonResponse(serializer_comment, safe=False)
+
+        #Добавляем json информацию о задаче в 0 элемент листа. Начиная с 1 - json комментариев
+        serializer_comment.insert(0,serializer_task.data)
+
+        return JsonResponse(serializer_comment, safe=False)
     return 0
