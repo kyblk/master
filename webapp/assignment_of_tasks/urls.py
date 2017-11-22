@@ -15,6 +15,8 @@ urlpatterns = [
 
 
 
-    url(r'^rest-api/task_list$', views.task_list_api, name='task_list_api'),
-    url(r'^rest-api/task/(?P<pk>\d+)/$', views.task_detail_api, name='task_detail_api'),
+    url(r'^api/task_list/$', views.task_list_api, name='task_list_api'),
+    url(r'^api/my_tasks/$', views.my_task_list_api, name='my_task_list_api'),
+    url(r'^api/dictionary_statuses/$', views.get_statuses, name='dictionary_statuses_api'),
+    url(r'^api/task/(?P<pk>\d+)/$', views.task_detail_api, name='task_detail_api'),
 ]

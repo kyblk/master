@@ -14,6 +14,7 @@ task_statuses = (
     )
 
 
+
 class Task(models.Model):
     author = models.ForeignKey('auth.User', related_name='creator')
     assigned_to = models.ForeignKey('auth.User', related_name='responsible')

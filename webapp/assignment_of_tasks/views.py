@@ -5,9 +5,9 @@ from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Task, Comment
+from .models import Task, Comment, task_statuses
 from .forms import TaskForm, CommentForm, UpdateTask, UserForm
-
+import simplejson
 '''
 API
 '''
@@ -17,7 +17,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from .serializers import TaskShortSerializer, TaskDetailSerializer, CommentDetailSerializer
 from rest_framework import serializers
-import simplejson
+import json
 '''
 '''
 
@@ -150,13 +150,16 @@ def task_list_api(request):
         serializer = TaskShortSerializer(tasks, many=True)
         return JsonResponse(serializer.data, safe=False)
 
-    '''elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = TaskSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)'''
+    serializer = TaskShortSerializer()
+    return JsonResponse(serializer.errors, status=400)
+
+@login_required
+def my_task_list_api(request):
+    if request.method == 'GET':
+        tasks = Task.objects.filter(assigned_to=request.user)
+        serializer = TaskShortSerializer(tasks, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
     serializer = TaskShortSerializer()
     return JsonResponse(serializer.errors, status=400)
 
@@ -170,3 +173,13 @@ def task_detail_api(request, pk):
     if request.method == 'GET':
         json_task_detail = TaskDetailSerializer(task)
         return JsonResponse(json_task_detail.data)
+
+'''
+Не разобрался как серилизовать not model object - Tuple (task_statuses), чтобы в json отдавался сразу русское название статуса
+Поэтому статусы (значение на русском языке) мы будем получать с сервера отдельным запросом
+'''
+@csrf_exempt
+def get_statuses(request):
+    if request.method == 'GET':
+        dictionary = simplejson.dumps(task_statuses)
+        return JsonResponse(dictionary, safe=False)
