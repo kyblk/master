@@ -15,7 +15,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .serializers import TaskShortSerializer, TaskDetailSerializer, CommentDetailSerializer
+from .serializers import TaskShortSerializer, TaskDetailSerializer, UserSerializer
 from rest_framework import serializers
 import json
 '''
@@ -214,7 +214,12 @@ def add_comment_to_task_api(request, pk):
 Поэтому статусы (значение на русском языке) мы будем получать с сервера отдельным запросом
 '''
 @csrf_exempt
-def get_statuses(request):
+def get_statuses_api(request):
     if request.method == 'GET':
         dictionary = simplejson.dumps(task_statuses)
         return JsonResponse(dictionary, safe=False)
+
+def get_users_api(request):
+    users = User.objects.all()
+    json_users = UserSerializer(users,many=True)
+    return JsonResponse(json_users.data, safe=False)

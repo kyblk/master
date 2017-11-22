@@ -17,7 +17,8 @@ urlpatterns = [
 
     url(r'^api/task_list/$', views.task_list_api, name='task_list_api'),
     url(r'^api/my_tasks/$', views.my_task_list_api, name='my_task_list_api'),
-    url(r'^api/dictionary_statuses/$', views.get_statuses, name='dictionary_statuses_api'),
+    url(r'^api/dictionary_statuses/$', views.get_statuses_api, name='dictionary_statuses_api'),
+    url(r'^api/get_users/$', views.get_users_api, name='get_users_api'),
     url(r'^api/task/(?P<pk>\d+)/$', views.task_detail_api, name='task_detail_api'),
     url(r'^api/task/(?P<pk>\d+)/comment/$', views.add_comment_to_task_api, name='add_comment_to_task_api'),
 
