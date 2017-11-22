@@ -174,6 +174,41 @@ def task_detail_api(request, pk):
         json_task_detail = TaskDetailSerializer(task)
         return JsonResponse(json_task_detail.data)
 
+
+'''
+            import requests
+            import json
+            a = requests.post("http://127.0.0.1:8000/api/login/", data={"username": "testapi", "password": "111"})
+            c = a.cookies
+            r = requests.post("http://127.0.0.1:8000/api/task/18/comment/", 
+            data=json.dumps({'text' : "111" , 'change_state': "N", "assigned_to": "mech", "status" : "in_process"}), cookies=secure_cookie)
+'''
+@csrf_exempt
+def add_comment_to_task_api(request, pk):
+    if request.method == 'POST':
+        json_string = request.body.decode()
+        json_string = json.loads(json_string)
+        comment = CommentForm(json_string)
+        if comment.is_valid():
+            task = get_object_or_404(Task, pk=pk)
+            comment = comment.save(commit=False)
+            comment.task = task
+            comment.author = request.user
+            comment.created_date = timezone.now()
+            if json_string["change_state"] == "Y":
+                assigned_to = get_object_or_404(User, username=json_string["assigned_to"])
+                status = json_string["status"]
+                updating_task(pk, request.user, assigned_to, status, comment.text)
+                print('Added comment with update')
+            else:
+                comment.save()
+                task.last_update_date = timezone.now()
+                task.save(update_fields=['last_update_date'])
+                print('Added comment without update')
+        else:
+            print('Not valid comment')
+        return HttpResponse()
+
 '''
 Не разобрался как серилизовать not model object - Tuple (task_statuses), чтобы в json отдавался сразу русское название статуса
 Поэтому статусы (значение на русском языке) мы будем получать с сервера отдельным запросом
