@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Task, Comment, task_statuses
+from .models import Task, Comment, Statuses
 from .forms import TaskForm, CommentForm, UpdateTask, UserForm
 import simplejson
 '''
@@ -15,7 +15,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .serializers import TaskShortSerializer, TaskDetailSerializer, UserSerializer
+from .serializers import TaskShortSerializer, TaskDetailSerializer, UserSerializer, StatusSerialiser
 from rest_framework import serializers
 import json
 '''
@@ -107,16 +107,16 @@ def updating_task (pk,author,assigned_to,status,text):
     comment.change_state = "Y"
     comment.old_assigned_to = task.assigned_to
     comment.new_assigned_to = assigned_to
-    comment.old_status = task.status
-    comment.new_status = status
+    comment.old_status = task.status.title
+    comment.new_status = status.title
     ###
     task.assigned_to = assigned_to
     task.status = status
     task.last_update_date = timezone.now()
     comment.task = task
     comment.author = author
-    #change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
     comment.text = text
+    #change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
     comment.save()
     task.save(update_fields=['status', 'assigned_to','last_update_date'])
 
@@ -180,16 +180,18 @@ def task_detail_api(request, pk):
             import json
             a = requests.post("http://127.0.0.1:8000/api/login/", data={"username": "testapi", "password": "111"})
             c = a.cookies
-            r = requests.post("http://127.0.0.1:8000/api/task/18/comment/", 
-            data=json.dumps({'text' : "111" , 'change_state': "N", "assigned_to": "mech", "status" : "in_process"}), cookies=secure_cookie)
+            r = requests.post("http://127.0.0.1:8000/api/task/24/comment/", 
+            data=json.dumps({'text' : "test111" , 'change_state': "Y", "assigned_to": "mech", "status" : "4"}), cookies=c)
 '''
 @csrf_exempt
 def add_comment_to_task_api(request, pk):
     if request.method == 'POST':
         json_string = request.body.decode()
         json_string = json.loads(json_string)
+        print (json_string)
         comment = CommentForm(json_string)
         if comment.is_valid():
+            print(True)
             task = get_object_or_404(Task, pk=pk)
             comment = comment.save(commit=False)
             comment.task = task
@@ -197,7 +199,11 @@ def add_comment_to_task_api(request, pk):
             comment.created_date = timezone.now()
             if json_string["change_state"] == "Y":
                 assigned_to = get_object_or_404(User, username=json_string["assigned_to"])
-                status = json_string["status"]
+                try:
+                    status  = get_object_or_404(Statuses, id=int(json_string["status"]))
+                except:
+                    print (json_string["status"])
+                    print ("err status")
                 updating_task(pk, request.user, assigned_to, status, comment.text)
                 print('Added comment with update')
             else:
@@ -209,17 +215,16 @@ def add_comment_to_task_api(request, pk):
             print('Not valid comment')
         return HttpResponse()
 
-'''
-Не разобрался как серилизовать not model object - Tuple (task_statuses), чтобы в json отдавался сразу русское название статуса
-Поэтому статусы (значение на русском языке) мы будем получать с сервера отдельным запросом
-'''
 @csrf_exempt
 def get_statuses_api(request):
     if request.method == 'GET':
-        dictionary = simplejson.dumps(task_statuses)
-        return JsonResponse(dictionary, safe=False)
+        statuses = Statuses.objects.all()
+        statuses_list = StatusSerialiser(statuses, many=True)
+        return JsonResponse(statuses_list.data, safe=False)
 
+@csrf_exempt
 def get_users_api(request):
-    users = User.objects.all()
-    json_users = UserSerializer(users,many=True)
-    return JsonResponse(json_users.data, safe=False)
+    if request.method == 'GET':
+        users = User.objects.all()
+        json_users = UserSerializer(users,many=True)
+        return JsonResponse(json_users.data, safe=False)

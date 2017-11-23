@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from .models import Task, Comment, task_statuses
+from .models import Task, Comment, Statuses
 from django.contrib.auth.models import User
 
 
+class StatusSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = Statuses
+        fields = ('id', 'title', 'ended', 'sort')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

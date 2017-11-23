@@ -13,6 +13,18 @@ task_statuses = (
         ('completed', 'Завершена'),
     )
 
+class Statuses(models.Model):
+    title = models.CharField(max_length=50, null=False, blank=False, verbose_name=u'Название статуса')
+    ended = models.BooleanField(verbose_name=u'Закрывает ли статус задачу?')
+    sort = models.IntegerField(default=100, null=False, blank=False, verbose_name=u'Вес для сортировки')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['sort']
+        verbose_name = 'statuses'
+        verbose_name_plural = 'Статусы'
 
 
 class Task(models.Model):
@@ -24,15 +36,14 @@ class Task(models.Model):
             default=timezone.now)
     last_update_date = models.DateTimeField(
             default=timezone.now)
-    status =  models.CharField(
-                                        max_length=20,
-                                        choices=task_statuses,
-                                        default='new'
-                                     )
+    status = models.ForeignKey('assignment_of_tasks.Statuses', on_delete=models.CASCADE)
 
     def __str__(self):
         return 'id:' + str(self.pk) + '_' + self.title
 
+    class Meta:
+        verbose_name = 'tasks'
+        verbose_name_plural = 'Задачи'
 
 class Comment(models.Model):
     yes_or_no = (
@@ -53,16 +64,18 @@ class Comment(models.Model):
     new_assigned_to = models.ForeignKey('auth.User', related_name='new_responsible', null=True, blank = True)
     old_status = models.CharField(
                                         max_length=20,
-                                        choices=task_statuses,
+                                        #choices=task_statuses,
                                         null=True,
                                         blank=True
                                      )
     new_status = models.CharField(
                                         max_length=20,
-                                        choices=task_statuses,
+                                        #choices=task_statuses,
                                         null=True,
                                         blank=True
                                      )
+
+
 
     def __str__(self):
         return 'id:' + str(self.pk) + '_' + self.text

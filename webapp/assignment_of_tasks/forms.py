@@ -27,6 +27,17 @@ class UpdateTask(forms.ModelForm):
         model = Task
         fields = ('assigned_to','status')
 
+    '''
+    Сортировка статусов в форме по весу
+    upd: сортируется модель, данная функция не нужна
+    
+    def __init__(self, *args, **kwargs):
+        super(UpdateTask, self).__init__(*args, **kwargs)
+        self.fields['status'].queryset = self.fields['status'].queryset.order_by('sort')
+
+    '''
+
+
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
