@@ -1,14 +1,24 @@
-/* Меню. CSS от бустрапа, но если мы хотим что-то переопределить - меняем дефаулт на май  */
-.navbar-my{
- background: #F8F8F8;
-}
-.navbar-my ul li a{
- color: #fff;
-}
-.navbar-my ul li a:hover{
- background: #333;
-}
-.navbar-my .navbar-brand{
- color: #fff;
+/* Вообще все стили из bootstrap берем  */
+
+
+.my_container {
+    width: 100%;
+    max-width: 1000px;
+    text-align: center
+    display: inline-block;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
+.err_container {
+    width: 100%;
+    max-width: 500px;
+    text-align: center
+    display: inline-block;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}

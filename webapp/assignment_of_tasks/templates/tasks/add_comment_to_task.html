@@ -1,16 +1,17 @@
 {% extends 'tasks/base.html' %}
+{% load bootstrap %}
 
 {% block content %}
-<div class="container" id="new_comment" style="width: 400px">
-    <h1>Комментарий</h1>
+<div class="my_container">
+    <h1>Добавить комментарий</h1>
     <form method="POST" class="post-form">{% csrf_token %}
-        <p>{{ c_form.text }}</p>
-        <p>{{ c_form.change_state }}</p>
+        {{ c_form.text|bootstrap }}
+        {{ c_form.change_state|bootstrap }}
         <div id="change_id" class="change" style="display:none">
-        <p>Назначить на: {{ upd_task.assigned_to}}</p>
-        <p>{{ upd_task.status}}</p>
+        {{ upd_task.assigned_to|bootstrap}}
+        {{ upd_task.status|bootstrap }}
         </div>
-        <p><button type="submit" class="save btn btn-default">Отправить</button></p>
+        <p><button type="submit" class="save btn btn-default pull-right">Отправить</button></p>
     </form>
 </div>
 {% endblock %}

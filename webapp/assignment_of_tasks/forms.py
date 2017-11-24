@@ -15,6 +15,14 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ('assigned_to', 'title', 'text', 'status')
 
+    '''
+    Изменяем английское название assigned_to. Т.к. поле переопределено, оно не берет русское название из модели
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['assigned_to'].label = 'Назначить задачу на:'
+
 class CommentForm(forms.ModelForm):
 
     class Meta:
@@ -26,6 +34,10 @@ class UpdateTask(forms.ModelForm):
     class Meta:
         model = Task
         fields = ('assigned_to','status')
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTask, self).__init__(*args, **kwargs)
+        self.fields['assigned_to'].label = 'Назначить задачу на:'
 
     '''
     Сортировка статусов в форме по весу
@@ -39,6 +51,7 @@ class UpdateTask(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'first_name', 'last_name', 'is_staff', 'is_superuser')

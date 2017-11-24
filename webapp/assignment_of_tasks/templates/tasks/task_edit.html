@@ -1,14 +1,14 @@
 {% extends 'tasks/base.html' %}
-
+{% load bootstrap %}
 {% block content %}
-<div class="container" id="naw_task" style="width: 400px">
+<div class="my_container">
     <h1>Новая задача</h1>
     <form method="POST" class="post-form">{% csrf_token %}
-        <p>Назначить задачу на: {{ form.assigned_to }}</p>
-        <p>Тема: {{ form.title }} </p>
-        <p> {{ form.text }} </p>
-        {{ form.status}}
-        <button type="submit" class="save btn btn-default">Создать</button>
+            {{ form.assigned_to|bootstrap }}
+            {{ form.title|bootstrap }}
+            {{ form.text|bootstrap }}
+            {{ form.status|bootstrap }}
+        <button type="submit" class="save btn btn-default pull-right">Создать</button>
     </form>
 </div>
 {% endblock %}

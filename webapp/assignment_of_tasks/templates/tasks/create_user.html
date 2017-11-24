@@ -1,22 +1,18 @@
 {% extends 'tasks/base.html' %}
+{% load bootstrap %}
 
 {% block content %}
-<div class="container" id="new_comment" style="width: 400px">
+<div class="my_container">
     <h1>Создать пользователя</h1>
-        <form method="post" action="">
+        <form method="post" action="" autocomplete="off">
         {% csrf_token %}
-            <p>Ник:</p>
-            <p>{{ form.username }}</p>
-            <p>Пароль:</p>
-            <p>{{ form.password }}</p>
-            <p>Электронная почта:</p>
-            <p>{{ form.email }}</p>
-            <p>Имя:</p>
-            <p>{{ form.first_name }}</p>
-            <p>Фамилия:</p>
-            <p>{{ form.last_name }}</p>
-            <p>Сотрудник:{{ form.is_staff }}</p>
-            <p>Суперюзер:{{ form.is_superuser }}</p>
+            {{ form.username|bootstrap }}
+            {{ form.password|bootstrap }}
+            {{ form.email|bootstrap  }}
+            {{ form.first_name|bootstrap  }}
+            {{ form.last_name|bootstrap  }}
+            {{ form.is_staff|bootstrap  }}
+            {{ form.is_superuser|bootstrap  }}
         <input type="submit" value="Create new user account" />
     </form>
 </div>
