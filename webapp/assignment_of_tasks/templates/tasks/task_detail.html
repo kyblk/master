@@ -1,5 +1,7 @@
 {% extends 'tasks/base.html' %}
 
+{% block title %}Задача #{{ task.pk }} {{ task.title }}{% endblock %}
+
 {% block content %}
 <div class="container" id="post">
     <div class="task">

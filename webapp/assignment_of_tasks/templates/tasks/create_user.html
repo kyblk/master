@@ -1,4 +1,7 @@
 {% extends 'tasks/base.html' %}
+
+{% block title %}Создание нового пользователя{% endblock %}
+
 {% load bootstrap %}
 
 {% block content %}
@@ -13,7 +16,7 @@
             {{ form.last_name|bootstrap  }}
             {{ form.is_staff|bootstrap  }}
             {{ form.is_superuser|bootstrap  }}
-        <input type="submit" value="Create new user account" />
+        <input type="submit" class="save btn btn-default pull-right" value="Создать нового пользователя" />
     </form>
 </div>
 {% endblock %}
