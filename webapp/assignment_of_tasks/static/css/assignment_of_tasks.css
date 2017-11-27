@@ -22,3 +22,13 @@
     margin-right: auto;
     margin-left: auto;
 }
+
+.user_profile_container {
+    width: 100%;
+    max-width: 500px;
+    text-align: center
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}

@@ -6,7 +6,11 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Comment, Statuses
-from .forms import TaskForm, CommentForm, UpdateTask, UserForm
+from .forms import TaskForm, CommentForm, UpdateTask, UserForm, ProfileUserForm
+
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 import simplejson
 '''
 API
@@ -22,18 +26,18 @@ import json
 '''
 
 def task_list(request):
-    tasks = Task.objects.all().order_by('-created_date')
-    return render(request, 'tasks/task_list.html', {'tasks' : tasks})
+    tasks = Task.objects.order_by('-created_date').filter(status__ended=False)
+    return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Список задач'})
 
 @login_required
 def my_task_list(request):
-    tasks = Task.objects.all().order_by('-created_date')
-    return render(request, 'tasks/my_task_list.html', {'tasks' : tasks})
+    tasks = Task.objects.order_by('-created_date').filter(assigned_to=request.user)
+    return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Мои задачи'})
 
 @login_required
 def completed_task_list(request):
-    tasks = Task.objects.all().order_by('-created_date')
-    return render(request, 'tasks/completed_task_list.html', {'tasks' : tasks})
+    tasks = Task.objects.order_by('-created_date').filter(status__ended=True)
+    return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Завершенные задачи'})
 
 @login_required
 def task_detail(request, pk):
@@ -130,15 +134,52 @@ def comment_remove(request, pk_task, pk_com):
 @login_required
 def create_user(request):
     if request.method == "POST":
-        form = UserForm(request.POST)
+        form = UserForm(data=request.POST)
+        print(form.is_valid())
         if form.is_valid():
+            form.cleaned_data['is_superuser'] = form.cleaned_data['is_staff']
             User.objects.create_user(**form.cleaned_data)
+            messages.success(request, 'Пользователь успешно создан!')
             # redirect, or however you want to get to the main view
-            return redirect('task_list')
+            return redirect('create_user')
+        else:
+            messages.warning(request, 'Пользователь не создан!')
     else:
         form = UserForm()
 
-    return render(request, 'tasks/create_user.html', {'form': form})
+    return render(request, 'registration/create_user.html', {'form': form})
+
+'''
+Профайл юзера. Изменение 
+'''
+
+
+@login_required
+def user_profile(request):
+    get_user = get_object_or_404(User, id = request.user.id)
+    if request.method == "POST":
+
+        change_password = PasswordChangeForm(request.user, request.POST)
+        user_form = ProfileUserForm(data=request.POST, instance=get_user)
+        if user_form.is_valid():
+            get_user.first_name = user_form.cleaned_data['first_name']
+            get_user.last_name = user_form.cleaned_data['last_name']
+            get_user.save(update_fields=['first_name', 'last_name', ])
+            messages.success(request, 'Информация в профиле обновлена!')
+            return redirect('user_profile')
+        if change_password.is_valid():
+            user = change_password.save()
+            #update_session_auth_hash(request, user)  # Important! После смены пароля - пользователю необходимо будет авторизоваться заного
+            messages.success(request, 'Пароль успешно обновлен!')
+            return redirect('user_profile')
+        else:
+            user_form = ProfileUserForm(instance=get_user)
+            messages.warning(request, 'Пароль не был изменен!')
+    else:
+        change_password = PasswordChangeForm(request.user)
+        user_form = ProfileUserForm(instance=get_user)
+    return render(request, 'registration/profile.html', {'user_form': user_form, 'change_password': change_password})
+
 
 '''
 API methods

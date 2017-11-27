@@ -54,8 +54,24 @@ class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'first_name', 'last_name', 'is_staff', 'is_superuser')
+        fields = ('username', 'password', 'first_name', 'last_name', 'is_staff', 'is_superuser')
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['username'].help_text = None
         self.fields['password'].label = 'Пароль:'
+        self.fields['is_staff'].label = 'Администратор'
+        self.fields['is_superuser'].widget = forms.HiddenInput()
+
+
+class ProfileUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', )
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileUserForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['readonly'] = True
+        self.fields['username'].help_text = None
+
+

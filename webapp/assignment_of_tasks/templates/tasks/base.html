@@ -41,11 +41,12 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <!-- Для is_superuser рендерим другую надпись и делаем ссылку в админку ссылку -->
+                <li><a href="{% url 'user_profile' %}">Профиль</a></li>
                 {% ifequal user.is_superuser True %}
                 <li><a href="{% url 'create_user' %}">Создать пользователя</a></li>
                 <li><a target="_blank" href="/admin"><span class="glyphicon glyphicon-tower"></span> Привет, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
                 {% else %}
-                <li><a href=""><span class="glyphicon glyphicon-user"></span> Добро пожаловать, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
+                <li><a href="{% url 'user_profile' %}"><span class="glyphicon glyphicon-user"></span> Добро пожаловать, <b>{{ user.last_name }} {{ user.first_name }}</b>!</a></li>
                 {% endifequal %}
                 <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
             </ul>

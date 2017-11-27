@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^task/(?P<pk>\d+)/comment/$', views.add_comment_to_task, name='add_comment_to_task'),
     url(r'^task/(?P<pk_task>\d+)/comment/(?P<pk_com>\d+)/remove/$', views.comment_remove, name='comment_remove'),
     url(r'^create_user/$', views.create_user, name='create_user'),
-
+    url(r'^profile/$', views.user_profile, name='user_profile'),
 
 
     url(r'^api/task_list/$', views.task_list_api, name='task_list_api'),

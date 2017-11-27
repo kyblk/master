@@ -1,4 +1,7 @@
 {% extends "tasks/base.html" %}
+
+{% block title %}Авторизация{% endblock %}
+
 {% load bootstrap %}
 
 {% block content %}
@@ -9,18 +12,23 @@
 
     <div class="err_container">
                                         {% if form.errors %}
-                                        <p>Такие имя пользователя и пароль не найдены. Повторите попытку.</p>
+        <div class="alert alert-warning">Такие имя пользователя и пароль не найдены. Повторите попытку</div>
                                         {% endif %}
 
                                         {% if next %}
                                             {% if user.is_authenticated %}
 
-                                        <p>У вас недостаточно прав на просмотр этой страницы</p>
+        <div class="alert alert-warning">У вас недостаточно прав на просмотр этой страницы</div>
                                             {% else %}
 
-                                        <p>Авторизуйтесь для просмотра данной страницы.</p>
+        <div class="alert alert-warning">Авторизуйтесь для просмотра данной страницы</div>
                                             {% endif %}
                                         {% endif %}
+
+
+        {% for message in messages %}
+         <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
     </div>
 
     <div class="row">
