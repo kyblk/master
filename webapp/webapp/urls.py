@@ -21,7 +21,7 @@ from django.contrib.auth import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/login/$', views.login, name='login'),
+    url(r'^accounts/login/$',  views.login, name='login', kwargs={'template_name': 'users/login.html'}, ),
     url(r'^accounts/logout/$', views.logout, name='logout', kwargs={'next_page': '/'}),
     url(r'', include('assignment_of_tasks.urls')),
     url(r'^api/', include('rest_auth.urls')),

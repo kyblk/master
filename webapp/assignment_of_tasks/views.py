@@ -48,7 +48,7 @@ def task_list(request):
 
 @login_required
 def my_task_list(request):
-    tasks = Task.objects.order_by('-created_date').filter(assigned_to=request.user)
+    tasks = Task.objects.order_by('-created_date').filter(assigned_to=request.user, status__ended=False)
     page = request.GET.get('page', 1)
     paginator = Paginator(tasks, COUNT_PAGINATOR_PAGE)
     try:
@@ -204,7 +204,7 @@ def user_profile(request):
     else:
         change_password = PasswordChangeForm(request.user)
         user_form = ProfileUserForm(instance=get_user)
-    return render(request, 'registration/profile.html', {'user_form': user_form, 'change_password': change_password})
+    return render(request, 'users/profile.html', {'user_form': user_form, 'change_password': change_password})
 
 @login_required
 def create_user(request):
@@ -222,13 +222,13 @@ def create_user(request):
     else:
         form = UserForm()
 
-    return render(request, 'registration/create_user.html', {'form': form})
+    return render(request, 'users/create_user.html', {'form': form})
 
 @login_required
 def user_list(request):
     if request.user.is_superuser == True:
         users = User.objects.all()
-        return render(request, 'registration/users.html', {'users': users })
+        return render(request, 'users/users.html', {'users': users })
     return HttpResponseForbidden()
 
 '''

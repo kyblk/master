@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^task/(?P<pk_task>\d+)/comment/(?P<pk_com>\d+)/remove/$', views.comment_remove, name='comment_remove'),
     url(r'^create_user/$', views.create_user, name='create_user'),
     url(r'^profile/$', views.user_profile, name='user_profile'),
-    url(r'^user_list/$', views.user_list, name='user_list'),
+    url(r'^users/$', views.user_list, name='users'),
 
     url(r'^api/task_list/$', views.task_list_api, name='task_list_api'),
     url(r'^api/my_tasks/$', views.my_task_list_api, name='my_task_list_api'),
