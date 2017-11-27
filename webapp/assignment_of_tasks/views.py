@@ -1,16 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Comment, Statuses
 from .forms import TaskForm, CommentForm, UpdateTask, UserForm, ProfileUserForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponseForbidden
 import simplejson
 '''
 API
@@ -25,24 +26,69 @@ import json
 '''
 '''
 
+'''
+НАСТРОЙКА ПАГИНАТОРА. Количество объектов на странице
+'''
+COUNT_PAGINATOR_PAGE = 5
+
+'''
+Отображение задач на разных url
+'''
 def task_list(request):
     tasks = Task.objects.order_by('-created_date').filter(status__ended=False)
-    return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Список задач'})
+    page = request.GET.get('page', 1)
+    paginator = Paginator(tasks, COUNT_PAGINATOR_PAGE)
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
+    return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Список задач', 'pag' : tasks})
 
 @login_required
 def my_task_list(request):
     tasks = Task.objects.order_by('-created_date').filter(assigned_to=request.user)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(tasks, COUNT_PAGINATOR_PAGE)
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
     return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Мои задачи'})
 
 @login_required
 def completed_task_list(request):
     tasks = Task.objects.order_by('-created_date').filter(status__ended=True)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(tasks, COUNT_PAGINATOR_PAGE)
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
     return render(request, 'tasks/task_list.html', {'tasks' : tasks, 'title' : 'Завершенные задачи'})
 
 @login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    return render(request, 'tasks/task_detail.html', {'task': task})
+
+    comments = task.comments.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(comments, COUNT_PAGINATOR_PAGE)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
+    return render(request, 'tasks/task_detail.html', {'task': task, 'comments': comments})
+'''
+'''
 
 @login_required
 def task_new(request):
@@ -131,29 +177,9 @@ def comment_remove(request, pk_task, pk_com):
         comment.delete()
     return redirect('task_detail', pk=pk_task)
 
-@login_required
-def create_user(request):
-    if request.method == "POST":
-        form = UserForm(data=request.POST)
-        print(form.is_valid())
-        if form.is_valid():
-            form.cleaned_data['is_superuser'] = form.cleaned_data['is_staff']
-            User.objects.create_user(**form.cleaned_data)
-            messages.success(request, 'Пользователь успешно создан!')
-            # redirect, or however you want to get to the main view
-            return redirect('create_user')
-        else:
-            messages.warning(request, 'Пользователь не создан!')
-    else:
-        form = UserForm()
-
-    return render(request, 'registration/create_user.html', {'form': form})
-
 '''
 Профайл юзера. Изменение 
 '''
-
-
 @login_required
 def user_profile(request):
     get_user = get_object_or_404(User, id = request.user.id)
@@ -180,6 +206,30 @@ def user_profile(request):
         user_form = ProfileUserForm(instance=get_user)
     return render(request, 'registration/profile.html', {'user_form': user_form, 'change_password': change_password})
 
+@login_required
+def create_user(request):
+    if request.method == "POST" and request.user.is_superuser == True:
+        form = UserForm(data=request.POST)
+        print(form.is_valid())
+        if form.is_valid():
+            form.cleaned_data['is_superuser'] = form.cleaned_data['is_staff']
+            User.objects.create_user(**form.cleaned_data)
+            messages.success(request, 'Пользователь успешно создан!')
+            # redirect, or however you want to get to the main view
+            return redirect('create_user')
+        else:
+            messages.warning(request, 'Пользователь не создан!')
+    else:
+        form = UserForm()
+
+    return render(request, 'registration/create_user.html', {'form': form})
+
+@login_required
+def user_list(request):
+    if request.user.is_superuser == True:
+        users = User.objects.all()
+        return render(request, 'registration/users.html', {'users': users })
+    return HttpResponseForbidden()
 
 '''
 API methods

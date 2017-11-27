@@ -1,42 +1,46 @@
 {% extends 'tasks/base.html' %}
 
-{% block title %}Сотрудники{% endblock %}
+{% block title %}Список сотрудников{% endblock %}
 
 {% block content %}
 
 <div class="container">
-  <table class="table table-hover">
-    <thead>
-        <tr>
-            <th>id</th>
-            <th>Логин</th>
-            <th>Имя</th>
-            <th>Фамилия</th>
-            <th>Последний вход</th>
-            <th>Администратор</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr>
-            <td>1</td>
-            <td>Иван</td>
-            <td>Чмель</td>
-            <td>ivan@mail.ru</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Петр</td>
-            <td>Щербаков</td>
-            <td>petr@mail.ru</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Юрий</td>
-            <td>Голов</td>
-            <td>yuri@mail.ru</td>
-        </tr>
-    </tbody>
+    <h2>Сотрудники</h2>
+      <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Логин</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Последний вход</th>
+                <th>Активен</th>
+                <th>Администратор</th>
+            </tr>
+        </thead>
+          <tbody>
+      {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.last_login }}</td>
+                <td>
+                    {% ifequal user.is_active True %}
+                        <span class="glyphicon glyphicon-ok icon-success"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-remove icon-error"></span>
+                    {% endifequal %}
+                </td>
+                <td>
+                    {% ifequal user.is_superuser True %}
+                        <span class="glyphicon glyphicon-ok icon-success"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-remove icon-error"></span>
+                    {% endifequal %}
+                </td>
+            </tr>
+      {% endfor %}
+          </tbody>
 </table>
 
 </div>

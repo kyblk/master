@@ -20,7 +20,7 @@
         <p>{{ task.text|linebreaksbr }}</p>
         <hr>
     </div>
-    {% for comment in task.comments.all %}
+    {% for comment in comments %}
     <div class="comment">
         <h4>{{ comment.author.last_name }} {{ comment.author.first_name }} <font color="red" size="2"> {{ comment.created_date }}</font>
             {% ifequal user.username comment.author.username %}
@@ -44,6 +44,30 @@
         <br>
     </div>
     {% endfor %}
+
+    {% if comments.has_other_pages %}
+
+  <ul class="pagination">
+    {% if comments.has_previous %}
+      <li><a href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in comments.paginator.page_range %}
+      {% if comments.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if comments.has_next %}
+      <li><a href="?page={{ comments.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+
     {% if user.is_authenticated %}
     <p class="text-right"><a class="btn btn-default" href="{% url 'add_comment_to_task' pk=task.pk %}">Добавить
         комментарий</a></p>
