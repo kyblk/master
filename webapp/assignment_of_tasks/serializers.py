@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from .models import Task, Comment, Statuses
+from .models import Task, Comment, Statuses, History_changed
 from django.contrib.auth.models import User
 
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = History_changed
+        fields = ('old_assigned_to', 'new_assigned_to', 'old_status', 'new_status', 'old_percent', 'new_percent')
 
 class StatusSerialiser(serializers.ModelSerializer):
     class Meta:
@@ -18,12 +22,13 @@ class TaskShortSerializer(serializers.ModelSerializer):
     assigned_to = UserSerializer(read_only=True)
     class Meta:
         model = Task
-        fields = ('id', 'author', 'assigned_to', 'title', 'created_date', 'last_update_date', 'status')
+        fields = ('id', 'author', 'assigned_to', 'title', 'created_date', 'last_update_date', 'status', 'percent')
 
 class CommentDetailSerializer(serializers.ModelSerializer):
+    change_values = HistorySerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = ('author', 'text', 'created_date', 'change_state', 'old_assigned_to', 'new_assigned_to', 'old_status', 'new_status')
+        fields = ('author', 'text', 'created_date', 'change_state', 'change_values')
 
 class TaskDetailSerializer(serializers.ModelSerializer):
     comments = CommentDetailSerializer(many=True, read_only=True)
@@ -31,4 +36,4 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     assigned_to = UserSerializer(read_only=True)
     class Meta:
         model = Task
-        fields = ('id', 'author', 'assigned_to', 'title', 'text', 'created_date', 'status', 'comments')
+        fields = ('id', 'author', 'assigned_to', 'title', 'text', 'created_date', 'status', 'percent', 'comments')

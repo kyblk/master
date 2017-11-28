@@ -1,9 +1,11 @@
 from django.contrib import admin
 from .models import Task
-from .models import Comment, Statuses
+from .models import Comment, Statuses, History_changed
 
 admin.site.register(Task)
 admin.site.register(Comment)
+
+# admin.site.register(History_changed)
 # Register your models here.
 
 class MyModelAdmin(admin.ModelAdmin):

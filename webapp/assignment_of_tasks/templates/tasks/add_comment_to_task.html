@@ -9,12 +9,19 @@
     <h1>Добавить комментарий</h1>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ c_form.text|bootstrap }}
-        {{ c_form.change_state|bootstrap }}
+
+
+
         <div id="change_id" class="change" style="display:none">
-        {{ upd_task.assigned_to|bootstrap}}
-        {{ upd_task.status|bootstrap }}
+            {{ upd_task.assigned_to|bootstrap}}
+            {{ upd_task.status|bootstrap }}
+            {{ upd_task.percent|bootstrap }}
         </div>
-        <p><button type="submit" class="save btn btn-default pull-right">Отправить</button></p>
+
+        <label class="btn btn-default">
+            {{ c_form.change_state }} Изменить параметры задачи
+        </label>
+        <button type="submit" class="save btn btn-default pull-right">Отправить</button>
     </form>
 </div>
 {% endblock %}

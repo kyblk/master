@@ -1,10 +1,12 @@
 $(function() {
-    $('#change_id').hide();
-    $('#id_change_state').change(function(){
-        if($('#id_change_state').val() == "Y") {
+  $(document).ready(function() {
+    $('input[type="checkbox"]').click(function(){
+       if( $(this).is(':checked') ) {
             $('#change_id').show();
-        } else {
+       } else {
             $('#change_id').hide();
-        }
+       }
     });
+  });
 });
+

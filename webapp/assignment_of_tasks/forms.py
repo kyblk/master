@@ -33,7 +33,7 @@ class UpdateTask(forms.ModelForm):
     assigned_to = UserFullnameChoiceField(queryset=User.objects.all())
     class Meta:
         model = Task
-        fields = ('assigned_to','status')
+        fields = ('assigned_to', 'status', 'percent')
 
     def __init__(self, *args, **kwargs):
         super(UpdateTask, self).__init__(*args, **kwargs)

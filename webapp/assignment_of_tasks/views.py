@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Task, Comment, Statuses
+from .models import Task, Comment, Statuses, History_changed
 from .forms import TaskForm, CommentForm, UpdateTask, UserForm, ProfileUserForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -110,9 +110,8 @@ def task_edit(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == "POST":
         form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
+        if form.is_valid() and request.user == task.author or request.user.is_superuser:
             task = form.save(commit=False)
-            task.author = request.user
             task.created_date = timezone.now()
             task.save()
             return redirect('task_detail', pk=task.pk)
@@ -122,9 +121,11 @@ def task_edit(request, pk):
 
 @login_required
 def task_remove(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    task.delete()
-    return redirect('task_list')
+    if request.method == "GET":
+        task = get_object_or_404(Task, pk=pk)
+        if request.user == task.author or request.user.is_superuser:
+            task.delete()
+            return redirect('task_list')
 
 @login_required
 def add_comment_to_task(request, pk):
@@ -138,8 +139,8 @@ def add_comment_to_task(request, pk):
             comment.task = task
             comment.author = request.user
             comment.created_date = timezone.now()
-            if comment.change_state == 'Y':
-                updating_task(pk,request.user,upd_task.assigned_to,upd_task.status,comment.text)
+            if comment.change_state:
+                updating_task(pk, comment, request.user, upd_task.assigned_to, upd_task.status, upd_task.percent)
             else:
                 comment.save()
                 task.last_update_date = timezone.now()
@@ -150,32 +151,35 @@ def add_comment_to_task(request, pk):
         u_task = UpdateTask(instance=task)
     return render(request, 'tasks/add_comment_to_task.html', {'c_form': c_form, 'upd_task': u_task})
 
-def updating_task (pk,author,assigned_to,status,text):
+def updating_task (pk, comment, author, assigned_to, status, percent):
     task = get_object_or_404(Task, pk=pk)
-    comment = Comment()
+    new_history_object = History_changed()
     #Пишем историю в поля коммента.
-    comment.change_state = "Y"
-    comment.old_assigned_to = task.assigned_to
-    comment.new_assigned_to = assigned_to
-    comment.old_status = task.status.title
-    comment.new_status = status.title
+    new_history_object.old_assigned_to = task.assigned_to.get_full_name()
+    new_history_object.new_assigned_to = assigned_to.get_full_name()
+    new_history_object.old_status = task.status.title
+    new_history_object.new_status = status.title
+    new_history_object.old_percent = task.percent
+    new_history_object.new_percent = percent
+    new_history_object.save()
     ###
     task.assigned_to = assigned_to
     task.status = status
+    task.percent = percent
     task.last_update_date = timezone.now()
     comment.task = task
     comment.author = author
-    comment.text = text
-    #change_text = '<p><em><font size="2">Назначена на <b>%s</b> статус <b>[%s]</b> </b></em></p>' % (task.assigned_to.get_full_name(), task.get_status_display())
+    comment.change_values = new_history_object
     comment.save()
-    task.save(update_fields=['status', 'assigned_to','last_update_date'])
+    task.save(update_fields=['status', 'assigned_to','last_update_date', 'percent'])
 
 @login_required
 def comment_remove(request, pk_task, pk_com):
-    comment = get_object_or_404(Comment, pk=pk_com)
-    if comment.author == request.user:
-        comment.delete()
-    return redirect('task_detail', pk=pk_task)
+    if request.method == "GET":
+        comment = get_object_or_404(Comment, pk=pk_com)
+        if comment.author == request.user or request.user.is_superuser:
+            comment.delete()
+        return redirect('task_detail', pk=pk_task)
 
 '''
 Профайл юзера. Изменение 
